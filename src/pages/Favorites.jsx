@@ -1,24 +1,61 @@
-import "../css/Favorites.css"
-import { useMovieContext } from "../context/MovieContext"
+// src/pages/Favorites.jsx
 import MovieCard from "../components/MovieCard"
-function Favorites() {
-    // function
-    const {favorites} = useMovieContext()
+import { useNavigate, useLocation } from 'react-router-dom'
+import "../css/Favorites.css"
 
-    if(favorites.length>0) 
-        return <div className="favorites">
-    <h2>Your Favorite Movies</h2>
-    <div className="movies-grid">
-          {favorites.map((movie) => (
-            <MovieCard movie={movie} key={movie.id} />
+function Favorites({
+  favorites = [],
+  onToggleFavorite,
+  onAddToRecent,
+  isFavorite = () => false,
+  recentMovies = []
+}) {
+  const navigate = useNavigate()
+  const location = useLocation()
+
+  const handleMovieClick = (movie) => {
+    onAddToRecent && onAddToRecent(movie)
+  }
+
+  if (favorites.length === 0) {
+    return (
+      <div className="favorites-page">
+       
+
+        <div className="favorites-container">
+          <h2 className="section-title">My Favorites</h2>
+          <div className="empty-favorites">
+            <div className="empty-icon">❤️</div>
+            <h3>No favorites yet</h3>
+            <p>Start adding movies to your favorites by clicking the heart icon!</p>
+            <button className="browse-movies-button" onClick={() => navigate('/')}>Browse Movies</button>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  return (
+    <div className="favorites-page">
+      
+
+      <div className="favorites-container">
+        <h2 className="section-title">My Favorites ({favorites.length})</h2>
+        <div className="movies-grid">
+          {favorites.map((movie, index) => (
+            <MovieCard
+              key={movie.id}
+              movie={movie}
+              isFavorite={isFavorite(movie.id)}
+              onToggleFavorite={() => onToggleFavorite && onToggleFavorite(movie)}
+              onMovieClick={handleMovieClick}
+              index={index}
+            />
           ))}
         </div>
+      </div>
     </div>
-
-    return <div className="favorites-empty">
-        <h1>no Favorite movies yet</h1>
-        <p>start adding movies</p>
-    </div>
+  )
 }
 
 export default Favorites

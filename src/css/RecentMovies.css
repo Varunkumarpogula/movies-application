@@ -1,17 +1,43 @@
-/* src/css/Favorites.css */
-.favorites-page {
+/* src/css/RecentMovies.css */
+.recent-movies-page {
   min-height: 100vh;
   position: relative;
 }
 
-.favorites-container {
+.recent-movies-container {
   max-width: 1400px;
   margin: 0 auto;
   padding: 2rem 1rem;
   animation: slideUp 0.8s ease;
 }
 
-.empty-favorites {
+.recent-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.clear-recent-button {
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+  border: 1px solid #666;
+  padding: 0.75rem 1.5rem;
+  border-radius: 25px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-weight: 500;
+}
+
+.clear-recent-button:hover {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: #e50914;
+  color: #e50914;
+}
+
+.empty-recent {
   text-align: center;
   padding: 4rem 2rem;
   color: #888;
@@ -27,36 +53,17 @@
   opacity: 0.7;
 }
 
-.empty-favorites h3 {
+.empty-recent h3 {
   font-size: 1.5rem;
   margin-bottom: 1rem;
   color: #ccc;
 }
 
-.empty-favorites p {
+.empty-recent p {
   font-size: 1.1rem;
   line-height: 1.6;
   margin-bottom: 2rem;
   color: #999;
-}
-
-.browse-movies-button {
-  background: linear-gradient(135deg, #e50914 0%, #b2070f 100%);
-  color: white;
-  border: none;
-  padding: 1rem 2rem;
-  border-radius: 50px;
-  font-size: 1.1rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  box-shadow: 0 4px 15px rgba(229, 9, 20, 0.3);
-}
-
-.browse-movies-button:hover {
-  background: linear-gradient(135deg, #f40612 0%, #c40812 100%);
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(229, 9, 20, 0.4);
 }
 
 .movies-grid {
@@ -79,8 +86,13 @@
 
 /* Responsive */
 @media (max-width: 768px) {
-  .favorites-container {
+  .recent-movies-container {
     padding: 1rem;
+  }
+  
+  .recent-header {
+    flex-direction: column;
+    text-align: center;
   }
   
   .movies-grid {
@@ -88,7 +100,7 @@
     gap: 1rem;
   }
   
-  .empty-favorites {
+  .empty-recent {
     padding: 3rem 1rem;
   }
   
