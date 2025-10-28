@@ -31,7 +31,7 @@ function HeroSection({ movies, onMovieClick }) {
 
   const backdropUrl = currentMovie.backdrop_path 
     ? `https://image.tmdb.org/t/p/w1280${currentMovie.backdrop_path}`
-    : 'https://via.placeholder.com/1280x720/333333/ffffff?text=Featured+Movie'
+    : 'https://via.placeholder.com/1280x720/333333/ffffff?text=Movie+Hub'
 
   const nextMovie = () => {
     setCurrentMovieIndex((prev) => (prev + 1) % movies.length)
@@ -73,7 +73,7 @@ function HeroSection({ movies, onMovieClick }) {
               <span className="hero-year">
                 {currentMovie.release_date ? new Date(currentMovie.release_date).getFullYear() : 'Coming Soon'}
               </span>
-              {currentMovie.vote_average > 0 && (
+              {currentMovie.vote_average && (
                 <span className="hero-rating">
                   ⭐ {currentMovie.vote_average.toFixed(1)}
                 </span>

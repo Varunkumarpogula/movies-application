@@ -128,6 +128,11 @@
   font-size: 1.1rem;
 }
 
+.hero-rating {
+  color: #ffd700;
+}
+
+/* Movie indicators */
 .movie-indicators {
   position: absolute;
   bottom: 2rem;
@@ -202,6 +207,10 @@
   .hero-nav-arrow.right {
     right: 1rem;
   }
+
+  .movie-indicators {
+    bottom: 1rem;
+  }
 }
 
 @media (max-width: 480px) {
@@ -217,9 +226,5 @@
   .hero-rating {
     padding: 0.4rem 0.8rem;
     font-size: 1rem;
-  }
-
-  .movie-indicators {
-    bottom: 1rem;
   }
 }

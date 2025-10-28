@@ -1,63 +1,99 @@
-// 5567d55ef3a379c315246861a201b42c//
-// src/services/api.js
-// https:api.themoviedb.org/3/movie/popular?api_key=5567d55ef3a379c315246861a201b42c
-// src/services/api.js
-const API_KEY = '5567d55ef3a379c315246861a201b42c' // Replace with your actual API key
-const BASE_URL = 'https://api.themoviedb.org/3'
+// src/services/Api.js
+export const BACKEND = "http://localhost:4000";
 
-// Helper function for API calls
-const fetchFromAPI = async (endpoint) => {
-  try {
-    const response = await fetch(`${BASE_URL}${endpoint}?api_key=${API_KEY}`)
-    if (!response.ok) {
-      throw new Error(`API error: ${response.status}`)
-    }
-    const data = await response.json()
-    return data
-  } catch (error) {
-    console.error('API call failed:', error)
-    return { results: [], genres: [] }
+async function getJSON(res) {
+  if (!res.ok) {
+    const txt = await res.text().catch(() => "");
+    throw new Error(`API ${res.status} ${txt}`);
   }
+  return res.json();
 }
 
-// Get popular movies
-export const getPopularMovies = async () => {
-  const data = await fetchFromAPI('/movie/popular')
-  return data.results || []
+/* session endpoints */
+export async function createSessionOnServer(idToken) {
+  const res = await fetch(`${BACKEND}/sessionLogin`, {
+    method: "POST",
+    credentials: "include",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ idToken }),
+  });
+  return getJSON(res);
 }
 
-// Get now playing movies
-export const getNowPlayingMovies = async () => {
-  const data = await fetchFromAPI('/movie/now_playing')
-  return data.results || []
+export async function logoutOnServer() {
+  const res = await fetch(`${BACKEND}/sessionLogout`, {
+    method: "POST",
+    credentials: "include",
+  });
+  return getJSON(res);
 }
 
-// Search movies
-export const searchMovies = async (query) => {
-  const data = await fetchFromAPI(`/search/movie&query=${encodeURIComponent(query)}`)
-  return data.results || []
+/* per-user data endpoints */
+export async function fetchFavoritesFromServer() {
+  const res = await fetch(`${BACKEND}/api/favorites`, {
+    method: "GET",
+    credentials: "include",
+  });
+  return getJSON(res);
 }
 
-// Get movies by genre
-export const getMoviesByGenre = async (genreId) => {
-  const data = await fetchFromAPI(`/discover/movie&with_genres=${genreId}`)
-  return data.results || []
+export async function saveFavoritesToServer(favorites) {
+  const res = await fetch(`${BACKEND}/api/favorites`, {
+    method: "POST",
+    credentials: "include",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ favorites }),
+  });
+  return getJSON(res);
 }
 
-// Get all genres
-export const getGenres = async () => {
-  const data = await fetchFromAPI('/genre/movie/list')
-  return data.genres || []
+export async function fetchRecentFromServer() {
+  const res = await fetch(`${BACKEND}/api/recent`, {
+    method: "GET",
+    credentials: "include",
+  });
+  return getJSON(res);
 }
 
-// Get all languages
-export const getLanguages = async () => {
-  const data = await fetchFromAPI('/configuration/languages')
-  return data || []
+export async function saveRecentToServer(recent) {
+  const res = await fetch(`${BACKEND}/api/recent`, {
+    method: "POST",
+    credentials: "include",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ recent }),
+  });
+  return getJSON(res);
 }
 
-// Get movie details
-export const getMovieDetails = async (movieId) => {
-  const data = await fetchFromAPI(`/movie/${movieId}`)
-  return data
+/* TMDB helpers (unchanged if you already have them) */
+const TMDB_API_KEY = "5567d55ef3a379c315246861a201b42c";
+const TMDB_BASE = "https://api.themoviedb.org/3";
+
+export async function getPopularMovies() {
+  const r = await fetch(`${TMDB_BASE}/movie/popular?api_key=${TMDB_API_KEY}&language=en-US&page=1`);
+  return (await getJSON(r)).results || [];
+}
+export async function getNowPlayingMovies() {
+  const r = await fetch(`${TMDB_BASE}/movie/now_playing?api_key=${TMDB_API_KEY}&language=en-US&page=1`);
+  return (await getJSON(r)).results || [];
+}
+export async function searchMovies(q) {
+  const r = await fetch(`${TMDB_BASE}/search/movie?api_key=${TMDB_API_KEY}&query=${encodeURIComponent(q)}&include_adult=false&language=en-US&page=1`);
+  return (await getJSON(r)).results || [];
+}
+export async function getMoviesByGenre(id) {
+  const r = await fetch(`${TMDB_BASE}/discover/movie?api_key=${TMDB_API_KEY}&with_genres=${id}&language=en-US&page=1`);
+  return (await getJSON(r)).results || [];
+}
+export async function getGenres() {
+  const r = await fetch(`${TMDB_BASE}/genre/movie/list?api_key=${TMDB_API_KEY}&language=en-US`);
+  return (await getJSON(r)).genres || [];
+}
+export async function getLanguages() {
+  const r = await fetch(`${TMDB_BASE}/configuration/languages?api_key=${TMDB_API_KEY}`);
+  return await getJSON(r);
+}
+export async function getMoviesByLanguage(lang) {
+  const r = await fetch(`${TMDB_BASE}/discover/movie?api_key=${TMDB_API_KEY}&with_original_language=${lang}&language=en-US&page=1`);
+  return (await getJSON(r)).results || [];
 }
