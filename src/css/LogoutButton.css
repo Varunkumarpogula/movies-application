@@ -1,0 +1,388 @@
+/* src/css/LogoutButton.css */
+
+/* Container */
+.logout-button-container {
+  position: relative;
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial;
+}
+
+/* Trigger */
+.account-menu-trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 12px;
+  color: white;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: transform 0.18s ease, background 0.18s ease, border-color 0.18s ease;
+  backdrop-filter: blur(4px);
+}
+
+.account-menu-trigger:hover:not(:disabled),
+.account-menu-trigger:focus {
+  background: rgba(255, 255, 255, 0.09);
+  border-color: rgba(255, 255, 255, 0.22);
+  transform: translateY(-2px);
+  outline: none;
+}
+
+.account-menu-trigger:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Icon & avatar inside trigger */
+.account-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+}
+
+.profile-avatar {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid rgba(255, 255, 255, 0.22);
+}
+
+/* Dropdown caret */
+.dropdown-arrow {
+  font-size: 11px;
+  transition: transform 0.22s ease;
+  display: inline-block;
+  line-height: 1;
+}
+
+/* Backdrop used to capture outside clicks */
+.menu-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 99;
+  background: transparent;
+}
+
+/* Main menu */
+.account-menu {
+  position: absolute;
+  top: calc(100% + 10px);
+  right: 0;
+  width: 340px;
+  max-width: calc(100vw - 20px);
+  background: #ffffff;
+  border-radius: 14px;
+  box-shadow: 0 18px 50px rgba(2, 6, 23, 0.18);
+  z-index: 100;
+  overflow: hidden;
+  animation: slideDown 0.22s cubic-bezier(.2,.9,.3,1);
+  color: #111827;
+  font-size: 14px;
+}
+
+/* Slide animation */
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Header - gradient block with avatar & user info */
+.menu-header {
+  padding: 14px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: #fff;
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.menu-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid rgba(255, 255, 255, 0.2);
+  background: rgba(255,255,255,0.05);
+}
+
+.user-details {
+  flex: 1;
+  overflow: hidden;
+  min-width: 0;
+}
+
+.user-name {
+  font-size: 15px;
+  font-weight: 600;
+  margin-bottom: 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.user-email {
+  font-size: 13px;
+  opacity: 0.95;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Divider */
+.menu-divider {
+  height: 1px;
+  background: #eef2f7;
+}
+
+/* Quick actions row */
+.menu-actions {
+  padding: 10px 12px;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+  background: #fff;
+}
+
+/* Generic menu item (clickable block) */
+.menu-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  background: transparent;
+  border: none;
+  color: #374151;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  border-radius: 10px;
+  transition: background 0.14s ease, transform 0.12s ease;
+}
+
+.menu-item:hover:not(:disabled),
+.menu-item:focus {
+  background: #f3f4f6;
+  outline: none;
+  transform: translateY(-1px);
+}
+
+.menu-item:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Red logout style */
+.menu-item.logout {
+  color: #b91c1c;
+  background: transparent;
+}
+
+.menu-item.logout:hover:not(:disabled) {
+  background: #fff2f2;
+}
+
+/* Small variant for inline buttons inside lists */
+.menu-item.small {
+  padding: 6px 8px;
+  font-size: 13px;
+  border-radius: 8px;
+}
+
+/* Section (Favorites / Recent / Searches) */
+.menu-section {
+  padding: 12px;
+  background: #ffffff;
+}
+
+.menu-section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.menu-section-header strong {
+  font-size: 13px;
+  font-weight: 700;
+  color: #111827;
+}
+
+.menu-section-meta {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.menu-count {
+  font-size: 13px;
+  color: #6b7280;
+  opacity: 0.95;
+}
+
+/* Small action buttons next to header */
+.small-button {
+  padding: 6px 10px;
+  border-radius: 8px;
+  background: #f3f4f6;
+  border: 1px solid #e6e9ee;
+  font-size: 13px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.small-button:hover {
+  background: #eef2f6;
+}
+
+/* List container for saved items */
+.menu-list {
+  display: grid;
+  gap: 8px;
+  margin-top: 6px;
+}
+
+.menu-list-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 6px 8px;
+  border-radius: 8px;
+  transition: background 0.12s ease;
+}
+
+.menu-list-item:hover {
+  background: #fbfdff;
+}
+
+/* Item title */
+.menu-list-title {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  max-width: 190px;
+  font-size: 13px;
+  color: #111827;
+}
+
+/* Inline group for actions on each item */
+.menu-list-actions {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+
+/* Search form */
+.search-form {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.search-input {
+  flex: 1;
+  padding: 8px 10px;
+  border-radius: 10px;
+  border: 1px solid #e6e9ee;
+  font-size: 14px;
+  outline: none;
+}
+
+.search-input:focus {
+  box-shadow: 0 6px 18px rgba(99, 102, 241, 0.08);
+  border-color: #667eea;
+}
+
+/* Empty state small text */
+.menu-empty {
+  font-size: 13px;
+  color: #6b7280;
+  opacity: 0.95;
+}
+
+/* Utility spacing */
+.u-gap-12 { height: 12px; }
+
+/* Accessibility focus ring for keyboard users */
+.account-menu :focus {
+  box-shadow: 0 6px 18px rgba(99, 102, 241, 0.12);
+}
+
+/* Responsive adjustments */
+@media (max-width: 720px) {
+  .account-menu {
+    right: 8px;
+    left: 8px;
+    width: auto;
+    max-width: calc(100vw - 16px);
+    border-radius: 12px;
+  }
+
+  .menu-list-title {
+    max-width: 120px;
+  }
+
+  .menu-avatar {
+    width: 44px;
+    height: 44px;
+  }
+
+  .account-menu-trigger {
+    padding: 6px 12px;
+  }
+
+  .profile-avatar {
+    width: 20px;
+    height: 20px;
+  }
+}
+
+/* Dark-mode friendly tweaks (if you want to enable via a wrapper or prefers-color-scheme) */
+@media (prefers-color-scheme: dark) {
+  .account-menu {
+    background: #0b1220;
+    color: #e6eef8;
+    box-shadow: 0 18px 50px rgba(2, 6, 23, 0.6);
+  }
+
+  .menu-divider {
+    background: rgba(255,255,255,0.04);
+  }
+
+  .menu-header {
+    background: linear-gradient(135deg, #5663e4 0%, #5e3aa6 100%);
+    color: #fff;
+  }
+
+  .menu-item:hover:not(:disabled) {
+    background: rgba(255,255,255,0.03);
+  }
+
+  .search-input {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.06);
+    color: #e6eef8;
+  }
+
+  .small-button {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.06);
+    color: #e6eef8;
+  }
+}

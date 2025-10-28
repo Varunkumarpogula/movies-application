@@ -1,99 +1,156 @@
 // src/services/Api.js
-export const BACKEND = "http://localhost:4000";
+const TMDB_API_KEY = "5567d55ef3a379c315246861a201b42c";
+const BASE_URL = "https://api.themoviedb.org/3";
+const BACKEND_URL = "http://localhost:4000"; // Your backend server
 
-async function getJSON(res) {
-  if (!res.ok) {
-    const txt = await res.text().catch(() => "");
-    throw new Error(`API ${res.status} ${txt}`);
-  }
-  return res.json();
+// TMDB API calls
+export async function searchMovies(query) {
+  const response = await fetch(
+    `${BASE_URL}/search/movie?api_key=${TMDB_API_KEY}&query=${encodeURIComponent(query)}`
+  );
+  const data = await response.json();
+  return data.results || [];
 }
 
-/* session endpoints */
+export async function getPopularMovies() {
+  const response = await fetch(`${BASE_URL}/movie/popular?api_key=${TMDB_API_KEY}`);
+  const data = await response.json();
+  return data.results || [];
+}
+
+export async function getNowPlayingMovies() {
+  const response = await fetch(`${BASE_URL}/movie/now_playing?api_key=${TMDB_API_KEY}`);
+  const data = await response.json();
+  return data.results || [];
+}
+
+export async function getMoviesByGenre(genreId) {
+  const response = await fetch(
+    `${BASE_URL}/discover/movie?api_key=${TMDB_API_KEY}&with_genres=${genreId}&sort_by=popularity.desc`
+  );
+  const data = await response.json();
+  return data.results || [];
+}
+
+export async function getMoviesByLanguage(languageCode) {
+  const response = await fetch(
+    `${BASE_URL}/discover/movie?api_key=${TMDB_API_KEY}&with_original_language=${languageCode}&sort_by=popularity.desc`
+  );
+  const data = await response.json();
+  return data.results || [];
+}
+
+export async function getGenres() {
+  const response = await fetch(`${BASE_URL}/genre/movie/list?api_key=${TMDB_API_KEY}`);
+  const data = await response.json();
+  return data.genres || [];
+}
+
+export async function getLanguages() {
+  const response = await fetch(`${BASE_URL}/configuration/languages?api_key=${TMDB_API_KEY}`);
+  return await response.json();
+}
+
+// Backend Auth & Data calls
 export async function createSessionOnServer(idToken) {
-  const res = await fetch(`${BACKEND}/sessionLogin`, {
+  const response = await fetch(`${BACKEND_URL}/sessionLogin`, {
     method: "POST",
-    credentials: "include",
     headers: { "Content-Type": "application/json" },
+    credentials: "include",
     body: JSON.stringify({ idToken }),
   });
-  return getJSON(res);
+  if (!response.ok) throw new Error("Session creation failed");
+  return response.json();
 }
 
 export async function logoutOnServer() {
-  const res = await fetch(`${BACKEND}/sessionLogout`, {
+  const response = await fetch(`${BACKEND_URL}/sessionLogout`, {
     method: "POST",
     credentials: "include",
   });
-  return getJSON(res);
+  return response.json();
 }
 
-/* per-user data endpoints */
+// Favorites
 export async function fetchFavoritesFromServer() {
-  const res = await fetch(`${BACKEND}/api/favorites`, {
-    method: "GET",
+  const response = await fetch(`${BACKEND_URL}/api/favorites`, {
     credentials: "include",
   });
-  return getJSON(res);
+  if (!response.ok) throw new Error("Failed to fetch favorites");
+  return response.json();
 }
 
 export async function saveFavoritesToServer(favorites) {
-  const res = await fetch(`${BACKEND}/api/favorites`, {
+  const response = await fetch(`${BACKEND_URL}/api/favorites`, {
     method: "POST",
-    credentials: "include",
     headers: { "Content-Type": "application/json" },
+    credentials: "include",
     body: JSON.stringify({ favorites }),
   });
-  return getJSON(res);
+  if (!response.ok) throw new Error("Failed to save favorites");
+  return response.json();
 }
 
+// Recent Movies
 export async function fetchRecentFromServer() {
-  const res = await fetch(`${BACKEND}/api/recent`, {
-    method: "GET",
+  const response = await fetch(`${BACKEND_URL}/api/recent`, {
     credentials: "include",
   });
-  return getJSON(res);
+  if (!response.ok) throw new Error("Failed to fetch recent");
+  return response.json();
 }
 
 export async function saveRecentToServer(recent) {
-  const res = await fetch(`${BACKEND}/api/recent`, {
+  const response = await fetch(`${BACKEND_URL}/api/recent`, {
     method: "POST",
-    credentials: "include",
     headers: { "Content-Type": "application/json" },
+    credentials: "include",
     body: JSON.stringify({ recent }),
   });
-  return getJSON(res);
+  if (!response.ok) throw new Error("Failed to save recent");
+  return response.json();
 }
 
-/* TMDB helpers (unchanged if you already have them) */
-const TMDB_API_KEY = "5567d55ef3a379c315246861a201b42c";
-const TMDB_BASE = "https://api.themoviedb.org/3";
+// Search History
+export async function fetchSearchHistoryFromServer() {
+  const response = await fetch(`${BACKEND_URL}/api/searches`, {
+    credentials: "include",
+  });
+  if (!response.ok) throw new Error("Failed to fetch search history");
+  return response.json();
+}
 
-export async function getPopularMovies() {
-  const r = await fetch(`${TMDB_BASE}/movie/popular?api_key=${TMDB_API_KEY}&language=en-US&page=1`);
-  return (await getJSON(r)).results || [];
+export async function saveSearchHistoryToServer(searches) {
+  const response = await fetch(`${BACKEND_URL}/api/searches`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    credentials: "include",
+    body: JSON.stringify({ searches }),
+  });
+  if (!response.ok) throw new Error("Failed to save search history");
+  return response.json();
 }
-export async function getNowPlayingMovies() {
-  const r = await fetch(`${TMDB_BASE}/movie/now_playing?api_key=${TMDB_API_KEY}&language=en-US&page=1`);
-  return (await getJSON(r)).results || [];
-}
-export async function searchMovies(q) {
-  const r = await fetch(`${TMDB_BASE}/search/movie?api_key=${TMDB_API_KEY}&query=${encodeURIComponent(q)}&include_adult=false&language=en-US&page=1`);
-  return (await getJSON(r)).results || [];
-}
-export async function getMoviesByGenre(id) {
-  const r = await fetch(`${TMDB_BASE}/discover/movie?api_key=${TMDB_API_KEY}&with_genres=${id}&language=en-US&page=1`);
-  return (await getJSON(r)).results || [];
-}
-export async function getGenres() {
-  const r = await fetch(`${TMDB_BASE}/genre/movie/list?api_key=${TMDB_API_KEY}&language=en-US`);
-  return (await getJSON(r)).genres || [];
-}
-export async function getLanguages() {
-  const r = await fetch(`${TMDB_BASE}/configuration/languages?api_key=${TMDB_API_KEY}`);
-  return await getJSON(r);
-}
-export async function getMoviesByLanguage(lang) {
-  const r = await fetch(`${TMDB_BASE}/discover/movie?api_key=${TMDB_API_KEY}&with_original_language=${lang}&language=en-US&page=1`);
-  return (await getJSON(r)).results || [];
+
+
+
+// src/services/Api.js (append or modify)
+export async function destroySessionOnServer() {
+  // Best-effort: call backend logout endpoint which should clear session cookie
+  const resp = await fetch("/api/logout", {
+    method: "POST",
+    credentials: "include", // important if you're using cookies for session
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({}),
+  });
+
+  if (!resp.ok) {
+    const text = await resp.text().catch(() => "");
+    const err = new Error(`Failed to logout from server: ${resp.status} ${resp.statusText} ${text}`);
+    err.status = resp.status;
+    throw err;
+  }
+
+  return await resp.json().catch(() => ({}));
 }

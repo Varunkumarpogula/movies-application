@@ -1,100 +1,169 @@
 // src/App.jsx
-import { Routes, Route, useNavigate } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+import { onAuthStateChanged } from "firebase/auth";
+import { auth } from "./firebase";
 import Home from "./pages/Home";
 import Favorites from "./pages/Favorites";
 import RecentMovies from "./pages/RecentMovies";
-import { useState, useEffect, useRef } from "react";
+import Login from "./pages/Login";
 import DataManager from "./utils/dataManager";
 import "./css/App.css";
-import Login from "./pages/Login";
-
-import { onAuthStateChanged } from "firebase/auth";
-import { auth } from "./firebase";
 
 function App() {
-  const navigate = useNavigate();
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
   const [favorites, setFavorites] = useState([]);
   const [recentMovies, setRecentMovies] = useState([]);
-  const initialLoadRef = useRef(false);
+  const [searchHistory, setSearchHistory] = useState([]);
 
+  // Auth state listener
   useEffect(() => {
-    let mounted = true;
-    (async () => {
-      try {
-        const savedFavorites = await DataManager.getFavorites();
-        const savedRecent = await DataManager.getRecentMovies();
-        if (!mounted) return;
-        setFavorites(savedFavorites || []);
-        setRecentMovies(savedRecent || []);
-      } catch (e) {
-        console.error("Error loading initial data:", e);
+    const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
+      console.log("Auth state changed:", currentUser ? currentUser.email : "No user");
+      setUser(currentUser);
+
+      if (currentUser) {
+        // Load user data from server/localStorage
+        console.log("Loading user data for:", currentUser.uid);
+        try {
+          const [favs, recent, searches] = await Promise.all([
+            DataManager.getFavorites(),
+            DataManager.getRecentMovies(),
+            DataManager.getSearchHistory(),
+          ]);
+          setFavorites(favs);
+          setRecentMovies(recent);
+          setSearchHistory(searches);
+          console.log("User data loaded:", { favs: favs.length, recent: recent.length, searches: searches.length });
+        } catch (err) {
+          console.error("Error loading user data:", err);
+        }
+      } else {
+        // Clear state when logged out
         setFavorites([]);
         setRecentMovies([]);
-      } finally { initialLoadRef.current = true; }
-    })();
-    return () => { mounted = false; };
+        setSearchHistory([]);
+      }
+
+      setLoading(false);
+    });
+
+    return () => unsubscribe();
   }, []);
 
-  useEffect(() => {
-    if (!initialLoadRef.current) return;
-    (async () => { await DataManager.saveFavorites(favorites); })();
-  }, [favorites]);
+  // Toggle favorite
+  const handleToggleFavorite = async (movie) => {
+    const isFav = favorites.some((fav) => fav.id === movie.id);
+    let newFavorites;
 
-  useEffect(() => {
-    if (!initialLoadRef.current) return;
-    (async () => { await DataManager.saveRecentMovies(recentMovies); })();
-  }, [recentMovies]);
+    if (isFav) {
+      newFavorites = favorites.filter((fav) => fav.id !== movie.id);
+      console.log("Removed from favorites:", movie.title);
+    } else {
+      newFavorites = [...favorites, movie];
+      console.log("Added to favorites:", movie.title);
+    }
 
-  const toggleFavorite = (movie) => {
-    if (!movie || movie.id == null) return;
-    setFavorites(prev => {
-      const isFav = prev.some(f => f.id === movie.id);
-      if (isFav) return prev.filter(f => f.id !== movie.id);
-      return [...prev, movie];
-    });
+    setFavorites(newFavorites);
+    await DataManager.saveFavorites(newFavorites);
   };
 
-  const addToRecentMovies = (movie) => {
-    if (!movie || movie.id == null) return;
-    setRecentMovies(prev => {
-      const filtered = prev.filter(m => m.id !== movie.id);
-      return [movie, ...filtered].slice(0, 20);
-    });
+  // Add to recent movies
+  const handleAddToRecent = async (movie) => {
+    let newRecent = recentMovies.filter((m) => m.id !== movie.id);
+    newRecent.unshift(movie);
+    newRecent = newRecent.slice(0, 20); // Keep only last 20
+
+    setRecentMovies(newRecent);
+    await DataManager.saveRecentMovies(newRecent);
+    console.log("Added to recent:", movie.title);
   };
 
-  const clearRecentMovies = () => setRecentMovies([]);
+  // Add search to history
+  const handleAddSearch = async (query) => {
+    if (!query || !query.trim()) return;
+    await DataManager.addSearchToHistory(query);
+    
+    // Reload search history
+    const searches = await DataManager.getSearchHistory();
+    setSearchHistory(searches);
+  };
 
-  const isFavorite = (movieId) => favorites.some(m => m.id === movieId);
+  // Check if movie is favorite
+  const isFavorite = (movieId) => {
+    return favorites.some((fav) => fav.id === movieId);
+  };
 
-  useEffect(() => {
-    // when auth state changes: if signed in, reload server data; if signed out, load local data and redirect
-    const unsub = onAuthStateChanged(auth, async (user) => {
-      if (user) {
-        try {
-          const [srvFavs, srvRecent] = await Promise.all([DataManager.getFavorites(), DataManager.getRecentMovies()]);
-          setFavorites(srvFavs || []);
-          setRecentMovies(srvRecent || []);
-        } catch (e) { console.warn("Failed to load server data on sign-in:", e); }
-      } else {
-        const localFavs = DataManager.getFavoritesLocalOnly();
-        const localRecent = DataManager.getRecentLocalOnly();
-        setFavorites(localFavs || []);
-        setRecentMovies(localRecent || []);
-        if (window.location.pathname !== "/login") navigate("/login");
-      }
-    });
-    return () => unsub();
-  }, [navigate]);
+  if (loading) {
+    return (
+      <div className="app-loading">
+        <div className="loading-spinner"></div>
+        <p>Loading MovieHub...</p>
+      </div>
+    );
+  }
 
   return (
-    <div className="App">
+    <Router>
       <Routes>
-        <Route path="/login" element={<Login />} />
-        <Route path="/" element={<Home favorites={favorites} recentMovies={recentMovies} onToggleFavorite={toggleFavorite} onAddToRecent={addToRecentMovies} isFavorite={isFavorite} />} />
-        <Route path="/favorites" element={<Favorites favorites={favorites} recentMovies={recentMovies} onToggleFavorite={toggleFavorite} onAddToRecent={addToRecentMovies} isFavorite={isFavorite} />} />
-        <Route path="/recent" element={<RecentMovies recentMovies={recentMovies} onToggleFavorite={toggleFavorite} onAddToRecent={addToRecentMovies} isFavorite={isFavorite} onClearRecent={clearRecentMovies} />} />
+        <Route
+          path="/login"
+          element={user ? <Navigate to="/" replace /> : <Login />}
+        />
+        <Route
+          path="/"
+          element={
+            user ? (
+              <Home
+                favorites={favorites}
+                onToggleFavorite={handleToggleFavorite}
+                onAddToRecent={handleAddToRecent}
+                onAddSearch={handleAddSearch}
+                isFavorite={isFavorite}
+                recentMovies={recentMovies}
+                searchHistory={searchHistory}
+              />
+            ) : (
+              <Navigate to="/login" replace />
+            )
+          }
+        />
+        <Route
+          path="/favorites"
+          element={
+            user ? (
+              <Favorites
+                favorites={favorites}
+                onToggleFavorite={handleToggleFavorite}
+                onAddToRecent={handleAddToRecent}
+                isFavorite={isFavorite}
+                recentMovies={recentMovies}
+              />
+            ) : (
+              <Navigate to="/login" replace />
+            )
+          }
+        />
+        <Route
+          path="/recent"
+          element={
+            user ? (
+              <RecentMovies
+                recentMovies={recentMovies}
+                onToggleFavorite={handleToggleFavorite}
+                onAddToRecent={handleAddToRecent}
+                isFavorite={isFavorite}
+                favorites={favorites}
+              />
+            ) : (
+              <Navigate to="/login" replace />
+            )
+          }
+        />
+        <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
-    </div>
+    </Router>
   );
 }
 
