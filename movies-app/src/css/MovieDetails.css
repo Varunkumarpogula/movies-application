@@ -1,0 +1,502 @@
+.movie-details-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.9);
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  z-index: 1000;
+  overflow-y: auto;
+  backdrop-filter: blur(10px);
+}
+
+.movie-details-container {
+  position: relative;
+  background: #0a0a0a;
+  max-width: 1200px;
+  width: 100%;
+  min-height: 100vh;
+  overflow: hidden;
+}
+
+.close-button {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  background: rgba(0, 0, 0, 0.8);
+  border: none;
+  color: white;
+  font-size: 32px;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  cursor: pointer;
+  z-index: 1001;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(10px);
+}
+
+.close-button:hover {
+  background: #e50914;
+  transform: scale(1.1);
+}
+
+/* Full-width Backdrop */
+.movie-backdrop-full {
+  position: relative;
+  height: 70vh;
+  min-height: 500px;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  display: flex;
+  align-items: flex-end;
+}
+
+.backdrop-overlay-full {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    to bottom,
+    transparent 0%,
+    rgba(0, 0, 0, 0.3) 50%,
+    #0a0a0a 100%
+  );
+}
+
+.poster-on-backdrop {
+  position: absolute;
+  left: 50px;
+  bottom: -100px;
+  z-index: 3;
+}
+
+.details-poster-large {
+  width: 200px;
+  height: 300px;
+  border-radius: 12px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.8);
+  object-fit: cover;
+}
+
+.movie-details-content-full {
+  position: relative;
+  z-index: 2;
+  padding: 0 50px 50px 50px;
+  margin-top: -80px;
+}
+
+.movie-main-info {
+  margin-bottom: 40px;
+  padding-left: 250px;
+}
+
+.title-section {
+  margin-bottom: 15px;
+}
+
+.movie-title-full {
+  font-size: 3em;
+  margin: 0 0 5px 0;
+  font-weight: 800;
+  color: white;
+  line-height: 1.1;
+}
+
+.original-title-full {
+  color: #ccc;
+  font-style: italic;
+  margin: 0;
+  font-size: 1.1em;
+}
+
+.movie-meta-full {
+  display: flex;
+  gap: 25px;
+  align-items: center;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.movie-year-full,
+.movie-runtime-full,
+.movie-rating-full {
+  background: rgba(229, 9, 20, 0.9);
+  color: white;
+  padding: 8px 16px;
+  border-radius: 25px;
+  font-size: 1em;
+  font-weight: 600;
+}
+
+.vote-count-full {
+  margin-left: 8px;
+  opacity: 0.9;
+  font-size: 0.9em;
+}
+
+.genres-full {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 25px;
+  flex-wrap: wrap;
+}
+
+.genre-tag-full {
+  background: rgba(255, 255, 255, 0.15);
+  color: white;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 0.9em;
+  font-weight: 500;
+  backdrop-filter: blur(10px);
+}
+
+.action-buttons-full {
+  display: flex;
+  gap: 15px;
+  flex-wrap: wrap;
+}
+
+.trailer-button-full,
+.favorite-button-full {
+  padding: 15px 25px;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-align: center;
+  min-width: 180px;
+}
+
+.trailer-button-full {
+  background: #e50914;
+  color: white;
+}
+
+.trailer-button-full:hover {
+  background: #b8070f;
+  transform: translateY(-2px);
+  box-shadow: 0 10px 20px rgba(229, 9, 20, 0.3);
+}
+
+.favorite-button-full {
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  backdrop-filter: blur(10px);
+}
+
+.favorite-button-full:hover {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.5);
+  transform: translateY(-2px);
+}
+
+.favorite-button-full.favorited {
+  background: #e50914;
+  border-color: #e50914;
+}
+
+/* Main Content Grid */
+.movie-details-grid {
+  display: grid;
+  grid-template-columns: 1fr 400px;
+  gap: 40px;
+  align-items: start;
+}
+
+/* Left Column */
+.details-left-column {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+}
+
+.overview-section h3,
+.key-details-section h3,
+.collection-section h3 {
+  color: white;
+  font-size: 1.5em;
+  margin: 0 0 15px 0;
+  border-bottom: 2px solid #e50914;
+  padding-bottom: 8px;
+}
+
+.movie-overview-full {
+  line-height: 1.7;
+  font-size: 1.1em;
+  color: #e0e0e0;
+  margin: 0;
+}
+
+.key-details-grid {
+  display: grid;
+  gap: 15px;
+  background: rgba(255, 255, 255, 0.05);
+  padding: 25px;
+  border-radius: 12px;
+  backdrop-filter: blur(10px);
+}
+
+.key-detail-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.key-detail-item:last-child {
+  border-bottom: none;
+}
+
+.key-detail-label {
+  font-weight: 600;
+  color: #ccc;
+  font-size: 1em;
+}
+
+.key-detail-value {
+  color: white;
+  font-weight: 500;
+  text-align: right;
+}
+
+/* Collection Section */
+.collection-card {
+  display: flex;
+  gap: 20px;
+  background: rgba(255, 255, 255, 0.05);
+  padding: 20px;
+  border-radius: 12px;
+  backdrop-filter: blur(10px);
+  align-items: center;
+}
+
+.collection-poster {
+  width: 100px;
+  height: 150px;
+  border-radius: 8px;
+  object-fit: cover;
+}
+
+.collection-info {
+  flex: 1;
+}
+
+.collection-title {
+  color: white;
+  margin: 0 0 15px 0;
+  font-size: 1.3em;
+}
+
+.view-collection-btn {
+  background: transparent;
+  color: #e50914;
+  border: 2px solid #e50914;
+  padding: 10px 20px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.view-collection-btn:hover {
+  background: #e50914;
+  color: white;
+}
+
+/* Right Column */
+.details-right-column {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+}
+
+.production-companies-full h3,
+.languages-section h3,
+.countries-section h3,
+.stats-section h3 {
+  color: white;
+  font-size: 1.3em;
+  margin: 0 0 15px 0;
+  border-bottom: 2px solid #e50914;
+  padding-bottom: 8px;
+}
+
+/* Full-width Company Logos */
+.companies-grid-full {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 15px;
+}
+
+.company-card-full {
+  background: rgba(255, 255, 255, 0.05);
+  padding: 20px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100px;
+  backdrop-filter: blur(10px);
+  transition: all 0.3s ease;
+}
+
+.company-card-full:hover {
+  background: rgba(255, 255, 255, 0.1);
+  transform: translateY(-2px);
+}
+
+.company-logo-full {
+  max-width: 100%;
+  max-height: 60px;
+  object-fit: contain;
+}
+
+.company-name-full {
+  color: white;
+  font-size: 0.9em;
+  font-weight: 500;
+  text-align: center;
+  line-height: 1.4;
+}
+
+/* Languages and Countries */
+.languages-list,
+.countries-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.language-tag,
+.country-tag {
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 0.9em;
+  backdrop-filter: blur(10px);
+}
+
+/* Stats Section */
+.stats-grid {
+  display: grid;
+  gap: 12px;
+  background: rgba(255, 255, 255, 0.05);
+  padding: 20px;
+  border-radius: 8px;
+  backdrop-filter: blur(10px);
+}
+
+.stat-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+}
+
+.stat-label {
+  color: #ccc;
+  font-weight: 500;
+}
+
+.stat-value {
+  color: white;
+  font-weight: 600;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .movie-details-grid {
+    grid-template-columns: 1fr;
+    gap: 30px;
+  }
+  
+  .movie-main-info {
+    padding-left: 0;
+    text-align: center;
+  }
+  
+  .poster-on-backdrop {
+    position: relative;
+    left: auto;
+    bottom: auto;
+    margin: -150px auto 20px auto;
+  }
+}
+
+@media (max-width: 768px) {
+  .movie-details-content-full {
+    padding: 0 20px 30px 20px;
+  }
+  
+  .movie-backdrop-full {
+    height: 50vh;
+    min-height: 400px;
+  }
+  
+  .movie-title-full {
+    font-size: 2.2em;
+  }
+  
+  .details-poster-large {
+    width: 150px;
+    height: 225px;
+  }
+  
+  .action-buttons-full {
+    justify-content: center;
+  }
+  
+  .trailer-button-full,
+  .favorite-button-full {
+    min-width: 160px;
+    padding: 12px 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  .movie-details-container {
+    margin: 0;
+  }
+  
+  .close-button {
+    top: 10px;
+    right: 10px;
+    width: 40px;
+    height: 40px;
+    font-size: 24px;
+  }
+  
+  .movie-title-full {
+    font-size: 1.8em;
+  }
+  
+  .movie-meta-full {
+    gap: 15px;
+    justify-content: center;
+  }
+  
+  .collection-card {
+    flex-direction: column;
+    text-align: center;
+  }
+  
+  .companies-grid-full {
+    grid-template-columns: 1fr;
+  }
+}
